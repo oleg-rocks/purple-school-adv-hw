@@ -7,30 +7,35 @@ import (
 )
 
 func main() {
-	numCh := make(chan []int)
-	sqrCh := make(chan []int)
+	numCh := make(chan int)
+	sqrCh := make(chan int)
 	go generateNum(numCh)
 	go squareNum(numCh, sqrCh)
-	result := <-sqrCh
+	var result []int
+	for val := range sqrCh {
+		result = append(result, val)
+	}
 	fmt.Println(result)
 }
 
-func generateNum(out chan []int) {
+func generateNum(out chan int) {
 	var randSlice []int
 	for i := 0; i < 10; i++ {
 		num := randNum()
 		randSlice = append(randSlice, num)
 	}
-	out <- randSlice
+	for _, val := range randSlice {
+		out <- val
+	}
+	close(out)
 }
 
-func squareNum(in chan []int, out chan []int) {
-	var sqrSlice []int
-	for _, val := range <-in {
+func squareNum(in chan int, out chan int) {
+	for val := range in {
 		sqrNum := int(math.Pow(float64(val), 2))
-		sqrSlice = append(sqrSlice, sqrNum)
+		out <- sqrNum
 	}
-	out <- sqrSlice
+	close(out)
 }
 
 func randNum() int {
