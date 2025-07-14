@@ -1,4 +1,4 @@
-package validation
+package verify
 
 import (
 	"fmt"
@@ -6,29 +6,29 @@ import (
 	"net/http"
 )
 
-type ValidationHandlerDeps struct {
+type VerifyHandlerDeps struct {
 	*configs.Config
 }
 
-type ValidationHandler struct {
+type VerifyHandler struct {
 	*configs.Config
 }
 
-func NewValidationHandler(router *http.ServeMux, deps ValidationHandlerDeps) {
-	handler := &ValidationHandler{
+func NewVerifyHandler(router *http.ServeMux, deps VerifyHandlerDeps) {
+	handler := &VerifyHandler{
 		Config: deps.Config,
 	}
 	router.HandleFunc("POST /send", handler.Send())
-	router.HandleFunc("POST /verify", handler.Verify())
+	router.HandleFunc("GET /verify/{hash}", handler.Verify())
 }	
 
-func (handler *ValidationHandler) Send() http.HandlerFunc {
+func (handler *VerifyHandler) Send() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("Send")
 	}
 }
 
-func (handler *ValidationHandler) Verify() http.HandlerFunc {
+func (handler *VerifyHandler) Verify() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("Verify")
 	}
