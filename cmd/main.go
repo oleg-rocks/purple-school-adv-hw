@@ -10,14 +10,13 @@ import (
 func main() {
 	config := configs.LoadConfig()
 	router := http.NewServeMux()
+	verify.NewVerifyHandler(router, verify.VerifyHandlerDeps{
+		Config: config,
+	})
 	server := http.Server {
 		Addr:    ":8081",
 		Handler: router,
 	}
 	fmt.Println("Server is running")
 	server.ListenAndServe()
-
-	verify.NewVerifyHandler(router, verify.VerifyHandlerDeps{
-		Config: config,
-	})
 }
