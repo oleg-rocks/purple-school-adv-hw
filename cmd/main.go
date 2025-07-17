@@ -5,11 +5,12 @@ import (
 	"go/adv-hw/configs"
 	"go/adv-hw/internal/verify"
 	"net/http"
+	"github.com/go-chi/chi/v5"
 )
 
 func main() {
 	config := configs.LoadConfig()
-	router := http.NewServeMux()
+	router := chi.NewRouter()
 	verify.NewVerifyHandler(router, verify.VerifyHandlerDeps{
 		Config: config,
 	})
