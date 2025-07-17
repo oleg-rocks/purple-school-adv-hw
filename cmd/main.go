@@ -2,13 +2,17 @@ package main
 
 import (
 	"fmt"
-	"go/adv-hw/api"
+	"go/adv-hw/configs"
+	"go/adv-hw/internal/verify"
 	"net/http"
 )
 
 func main() {
+	config := configs.LoadConfig()
 	router := http.NewServeMux()
-	api.NewDiceNumberGenerator(router)
+	verify.NewVerifyHandler(router, verify.VerifyHandlerDeps{
+		Config: config,
+	})
 	server := http.Server {
 		Addr:    ":8081",
 		Handler: router,
