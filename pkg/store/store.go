@@ -52,9 +52,9 @@ func FindHashAndRemove(hash string) (bool, error) {
 			file, _ := os.Create(dataFile)
 			defer file.Close()
 
-			remove(storedData, index)
+			newData := remove(storedData, index)
 			encoder := json.NewEncoder(file)
-			_ = encoder.Encode(storedData)
+			_ = encoder.Encode(newData)
 			return true, nil
 		}
 	}
