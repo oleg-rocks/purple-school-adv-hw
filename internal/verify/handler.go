@@ -39,26 +39,31 @@ func (handler *VerifyHandler) Send() http.HandlerFunc {
 			Email: payload.Email,
 			Hash: hash,
 		}
-		store.StoreVerifyData(data)
+		store.Save(data)
 		fmt.Println(data)
 		err = sender.SendVerification(payload.Email, hash, handler.Config)
 		if err != nil {
 			res.Json(w, err.Error(), http.StatusBadRequest)
 		}
+		res.Json(w, nil, http.StatusOK)
 	}
 }
 
 func (handler *VerifyHandler) Verify() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		hash := chi.URLParam(r, "hash")
-		match, err := store.HasHash(hash)
+		match, err := store.FindHashAndRemove(hash)
 		if err != nil {
 			fmt.Println(err.Error())
+			res.Json(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 		if match {
 			fmt.Println("✅ Email is verified!")
+			res.Json(w, nil, http.StatusOK)
 		} else {
 			fmt.Println("❌ Failed to verify this email.")
+			res.Json(w, nil, http.StatusInternalServerError)
 		}
 	}
 }

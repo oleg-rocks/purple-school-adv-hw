@@ -13,7 +13,7 @@ type VerifyData struct {
 
 const dataFile = "data.json"
 
-func StoreVerifyData(data VerifyData) error {
+func Save(data VerifyData) error {
 	var storedData []VerifyData
 	bytes, err := os.ReadFile(dataFile)
 	if err == nil {
@@ -35,7 +35,7 @@ func StoreVerifyData(data VerifyData) error {
 	return nil
 }
 
-func HasHash(hash string) (bool, error) {
+func FindHashAndRemove(hash string) (bool, error) {
 	bytes, err := os.ReadFile(dataFile)
 	if err != nil {
 		return false, fmt.Errorf("failed to read file")
@@ -47,10 +47,20 @@ func HasHash(hash string) (bool, error) {
 		return false, fmt.Errorf("failed to decode from JSON")
 	}
 
-	for _, item := range storedData {
-		if item.Hash == hash {
-			return true, nil
+	for index, item := range storedData {
+		if item.Hash == hash {			
+			file, _ := os.Create(dataFile)
+			defer file.Close()
+
+			remove(storedData, index)
+			encoder := json.NewEncoder(file)
+			_ = encoder.Encode(storedData)
 		}
 	}
-	return false, fmt.Errorf("failed find hash")
+	return false, nil
+}
+
+func remove(s []VerifyData, i int) []VerifyData {
+    s[i] = s[len(s)-1]
+    return s[:len(s)-1]
 }
