@@ -8,7 +8,7 @@ import (
 
 type VerifyData struct {
 	Email string `json:"email"`
-	Hash string `json:"hash"`
+	Hash  string `json:"hash"`
 }
 
 const dataFile = "data.json"
@@ -48,19 +48,20 @@ func FindHashAndRemove(hash string) (bool, error) {
 	}
 
 	for index, item := range storedData {
-		if item.Hash == hash {			
+		if item.Hash == hash {
 			file, _ := os.Create(dataFile)
 			defer file.Close()
 
 			remove(storedData, index)
 			encoder := json.NewEncoder(file)
 			_ = encoder.Encode(storedData)
+			return true, nil
 		}
 	}
 	return false, nil
 }
 
 func remove(s []VerifyData, i int) []VerifyData {
-    s[i] = s[len(s)-1]
-    return s[:len(s)-1]
+	s[i] = s[len(s)-1]
+	return s[:len(s)-1]
 }
