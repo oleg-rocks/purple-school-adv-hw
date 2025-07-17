@@ -33,6 +33,7 @@ func (handler *VerifyHandler) Send() http.HandlerFunc {
 		payload, err := req.HandleBody[VerifyRequest](&w, r)
 		if err != nil {
 			res.Json(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 		hash := gen.GenerateHash(payload.Email)
 		data := store.VerifyData{
@@ -44,6 +45,7 @@ func (handler *VerifyHandler) Send() http.HandlerFunc {
 		err = sender.SendVerification(payload.Email, hash, handler.Config)
 		if err != nil {
 			res.Json(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 		res.Json(w, nil, http.StatusOK)
 	}
@@ -55,15 +57,15 @@ func (handler *VerifyHandler) Verify() http.HandlerFunc {
 		match, err := store.FindHashAndRemove(hash)
 		if err != nil {
 			fmt.Println(err.Error())
-			res.Json(w, err.Error(), http.StatusInternalServerError)
+			res.Json(w, false, http.StatusNotFound)
 			return
 		}
 		if match {
 			fmt.Println("✅ Email is verified!")
-			res.Json(w, nil, http.StatusOK)
+			res.Json(w, true, http.StatusOK)
 		} else {
 			fmt.Println("❌ Failed to verify this email.")
-			res.Json(w, nil, http.StatusInternalServerError)
+			res.Json(w, false, http.StatusNotFound)
 		}
 	}
 }
