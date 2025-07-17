@@ -7,9 +7,9 @@ import (
 )
 
 type Config struct {
-	Email string
+	Username string
 	Password string
-	Address string
+	Host string
 }
 
 func LoadConfig() *Config {
@@ -18,8 +18,8 @@ func LoadConfig() *Config {
 		log.Println("Error loading .env file")
 	}
 	return &Config{
-		Email: os.Getenv("EMAIL"),
+		Username: os.Getenv("USERNAME"),
 		Password: os.Getenv("PASSWORD"),
-		Address: os.Getenv("ADDRESS"),
+		Host: os.Getenv("HOST"),
 	}
 }
